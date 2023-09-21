@@ -32,6 +32,8 @@ from .utils import (
 if TYPE_CHECKING:
     from .model import Whisper
 
+import io
+import sys
 
 def transcribe(
     model: "Whisper",
@@ -40,6 +42,7 @@ def transcribe(
     verbose: Optional[bool] = None,
     temperature: Union[float, Tuple[float, ...]] = (0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
     compression_ratio_threshold: Optional[float] = 2.4,
+    tqdmOut: Optional[io.StringIO] = sys.stdout,
     logprob_threshold: Optional[float] = -1.0,
     no_speech_threshold: Optional[float] = 0.6,
     condition_on_previous_text: bool = True,
@@ -220,7 +223,7 @@ def transcribe(
 
     # show the progress bar when verbose is False (if True, transcribed text will be printed)
     with tqdm.tqdm(
-        total=content_frames, unit="frames", disable=verbose is not False
+        total=content_frames, unit="frames", disable=verbose is not False, file=tqdmOut
     ) as pbar:
         last_speech_timestamp = 0.0
         while seek < content_frames:
@@ -340,7 +343,7 @@ def transcribe(
                 for segment in current_segments:
                     start, end, text = segment["start"], segment["end"], segment["text"]
                     line = f"[{format_timestamp(start)} --> {format_timestamp(end)}] {text}"
-                    print(make_safe(line))
+                    print("testing testing 123")
 
             # if a segment is instantaneous or does not contain text, clear it
             for i, segment in enumerate(current_segments):
